@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33706.43
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineTicketAPI", "OnlineTicketAPI\OnlineTicketAPI.csproj", "{22AACFAB-2563-48E3-B213-FB1CB154C511}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22AACFAB-2563-48E3-B213-FB1CB154C511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22AACFAB-2563-48E3-B213-FB1CB154C511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22AACFAB-2563-48E3-B213-FB1CB154C511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22AACFAB-2563-48E3-B213-FB1CB154C511}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A88A2F9A-EDD2-474B-925E-2AB4F57A0896}
+	EndGlobalSection
+EndGlobal
