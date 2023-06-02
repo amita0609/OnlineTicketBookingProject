@@ -1,0 +1,60 @@
+﻿@model IEnumerable<OnlineTicketData.Models.Event>
+<br />
+<div class="container">
+    <div class="row pb-2">
+        <div class="col">
+            <h1 class="text-primary">Event List</h1>
+        </div>
+        <div class="col text-end pt-1">
+            <a asp-controller="Event" asp-action="CreateEvent" class="btn btn-outline-primary"><i class="bi bi-plus-square-fill"></i> Create New Event</a>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    EventName
+                </th>
+                <th>
+                    EventDescription
+                </th>
+                <th>
+                    EventDate
+                </th>
+                <th>
+                    EventLocation
+                </th>
+                <th>
+                    AvailableSeats
+                </th>
+                <th>
+                   
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EventName</td>
+                    <td>@item.EventDescription</td>
+                    <td>@item.EventDate</td>
+                    <td>@item.EventLocation</td>
+                    <td>@item.AvailableSeats</td>
+                  
+                    <td>
+                        <a asp-controller="Event" asp-action="UpdateEvent" asp-route-eventId="@item.EventId" class="btn btn-success"><i class="bi bi-pencil-square"></i>Update</a>
+                        <a asp-controller="Event" asp-action="DeleteEvent" asp-route-eventId="@item.EventId" class="btn btn-danger"><i class="bi bi-trash-fill"></i>Delete</a>
+                    </td>
+                </tr>
+            }
+
+            @await Component.InvokeAsync("Countdown")
+
+        </tbody>
+    </table>
+    <br />
+
+   
+</div>
