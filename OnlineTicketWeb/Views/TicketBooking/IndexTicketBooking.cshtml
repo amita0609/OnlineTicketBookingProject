@@ -20,7 +20,8 @@
                 <td>@ticket.CustomerName</td>
                 <td>@ticket.Event.EventName</td>
                 <td>@ticket.NumberOfTicket</td>
-               
+                <a asp-controller="TicketBooking" asp-action="DeleteBooking"
+                   asp-route-ticketId="@ticket.TicketId" class="btn btn-danger">Delete Booking</a>
                
             </tr>
         }

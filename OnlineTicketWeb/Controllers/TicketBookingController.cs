@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OnlineTicketData.Models;
 using OnlineTicketData.Models.DTO;
@@ -51,6 +52,7 @@ namespace OnlineTicketWeb.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> BookTicket(TicketBookingDTO ticket)
         {
             var response = await _ticketBookingService.CreateAsync<APIResponse>(ticket);
@@ -65,7 +67,36 @@ namespace OnlineTicketWeb.Controllers
             return View(ticket);
         }
 
+     
+        public async Task<IActionResult> Delete(int id)
+        {
 
+            var response = await _ticketBookingService.GetAsync<APIResponse>(id);
+            if (response != null && response.IsSuccess)
+            {
+                Event model = JsonConvert.DeserializeObject<Event>(Convert.ToString(response.Result));
+                return View(model);
+            }
+            return NotFound();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteEvent(TicketBooking model)
+        {
+
+            var response = await _ticketBookingService.DeleteAsync<APIResponse>(model.TicketId);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Ticket deleted successfully";
+                return RedirectToAction(nameof(IndexTicketBooking));
+            }
+            TempData["error"] = "Error encountered.";
+            return View(model);
+        }
     }
 
 }
+
+
