@@ -4,14 +4,20 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OnlineTicketData.Models;
+using OnlineTicketData.Models.DTO;
+using OnlineTicketData.StaticData;
+using OnlineTicketWeb.Services;
 using OnlineTicketWeb.Services.IServices;
 using System.Collections.Generic;
 using System.Data;
+using System.Net.Sockets;
 
 namespace OnlineTicketWeb.Controllers
 {
+    [Authorize]
     public class TicketBookingController : Controller
     {
         private readonly ITicketBookingService _ticketBookingService;
@@ -37,168 +43,29 @@ namespace OnlineTicketWeb.Controllers
         }
 
 
-     //   [Authorize(Roles = "admin")]
-    //    public async Task<IActionResult> CreateTicketBooking()
-    //    {
-          
+        
+        public async Task<IActionResult> BookTicket()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BookTicket(TicketBookingDTO ticket)
+        {
+            var response = await _ticketBookingService.CreateAsync<APIResponse>(ticket);
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Ticked Booked successfully";
+                return RedirectToAction(nameof(IndexTicketBooking));
+            }
+        
+             TempData["error"] = "Error encountered.";
            
-    //           IEnumerable<SelectListItem>events= _eventService.GetAllAsync()
-    //            .Select(i => new SelectListItem
-    //                {
-    //                    Text = i.Name,
-    //                    Value = i.Id.ToString()
-    //                });
-    //          ViewBag.Events = Events;
-    //        }
-    //         return View();
-    //    }
+            return View(ticket);
+        }
 
 
-    //    [Authorize(Roles = "admin")]
-    //    [HttpPost]
-    //    [ValidateAntiForgeryToken]
-    //    public async Task<IActionResult> CreateTicketBooking(TicketBookingCreateVM model)
-    //    {
-    //        if (ModelState.IsValid)
-    //        {
+    }
 
-    //            var response = await _ticketBookingService.CreateAsync<APIResponse>(model.TicketBooking, HttpContext.Session.GetString(SD.SessionToken));
-    //            if (response != null && response.IsSuccess)
-    //            {
-    //                return RedirectToAction(nameof(IndexTicketBooking));
-    //            }
-    //            else
-    //            {
-    //                if (response.ErrorMessages.Count > 0)
-    //                {
-    //                    ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
-    //                }
-    //            }
-    //        }
-
-    //        var resp = await _villaService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
-    //        if (resp != null && resp.IsSuccess)
-    //        {
-    //            model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
-    //                (Convert.ToString(resp.Result)).Select(i => new SelectListItem
-    //                {
-    //                    Text = i.Name,
-    //                    Value = i.Id.ToString()
-    //                }); ;
-    //        }
-    //        return View(model);
-    //    }
-
-
-    //    [Authorize(Roles = "admin")]
-    //    public async Task<IActionResult> UpdateTicketBooking(int villaNo)
-    //    {
-    //        TicketBookingUpdateVM villaNumberVM = new();
-    //        var response = await _ticketBookingService.GetAsync<APIResponse>(villaNo, HttpContext.Session.GetString(SD.SessionToken));
-    //        if (response != null && response.IsSuccess)
-    //        {
-    //            TicketBookingDTO model = JsonConvert.DeserializeObject<TicketBookingDTO>(Convert.ToString(response.Result));
-    //            villaNumberVM.TicketBooking = _mapper.Map<TicketBookingUpdateDTO>(model);
-    //        }
-
-    //        response = await _villaService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
-    //        if (response != null && response.IsSuccess)
-    //        {
-    //            villaNumberVM.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
-    //                (Convert.ToString(response.Result)).Select(i => new SelectListItem
-    //                {
-    //                    Text = i.Name,
-    //                    Value = i.Id.ToString()
-    //                });
-    //            return View(villaNumberVM);
-    //        }
-
-
-    //        return NotFound();
-    //    }
-
-
-    //    [Authorize(Roles = "admin")]
-    //    [HttpPost]
-    //    [ValidateAntiForgeryToken]
-    //    public async Task<IActionResult> UpdateTicketBooking(TicketBookingUpdateVM model)
-    //    {
-    //        if (ModelState.IsValid)
-    //        {
-
-    //            var response = await _ticketBookingService.UpdateAsync<APIResponse>(model.TicketBooking, HttpContext.Session.GetString(SD.SessionToken));
-    //            if (response != null && response.IsSuccess)
-    //            {
-    //                return RedirectToAction(nameof(IndexTicketBooking));
-    //            }
-    //            else
-    //            {
-    //                if (response.ErrorMessages.Count > 0)
-    //                {
-    //                    ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
-    //                }
-    //            }
-    //        }
-
-    //        var resp = await _villaService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
-    //        if (resp != null && resp.IsSuccess)
-    //        {
-    //            model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
-    //                (Convert.ToString(resp.Result)).Select(i => new SelectListItem
-    //                {
-    //                    Text = i.Name,
-    //                    Value = i.Id.ToString()
-    //                }); ;
-    //        }
-    //        return View(model);
-    //    }
-
-
-    //    [Authorize(Roles = "admin")]
-    //    public async Task<IActionResult> DeleteTicketBooking(int villaNo)
-    //    {
-    //        TicketBookingDeleteVM villaNumberVM = new();
-    //        var response = await _ticketBookingService.GetAsync<APIResponse>(villaNo, HttpContext.Session.GetString(SD.SessionToken));
-    //        if (response != null && response.IsSuccess)
-    //        {
-    //            TicketBookingDTO model = JsonConvert.DeserializeObject<TicketBookingDTO>(Convert.ToString(response.Result));
-    //            villaNumberVM.TicketBooking = model;
-    //        }
-
-    //        response = await _villaService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
-    //        if (response != null && response.IsSuccess)
-    //        {
-    //            villaNumberVM.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
-    //                (Convert.ToString(response.Result)).Select(i => new SelectListItem
-    //                {
-    //                    Text = i.Name,
-    //                    Value = i.Id.ToString()
-    //                });
-    //            return View(villaNumberVM);
-    //        }
-
-
-    //        return NotFound();
-    //    }
-
-
-
-    //    [Authorize(Roles = "admin")]
-    //    [HttpPost]
-    //    [ValidateAntiForgeryToken]
-    //    public async Task<IActionResult> DeleteTicketBooking(TicketBookingDeleteVM model)
-    //    {
-
-    //        var response = await _ticketBookingService.DeleteAsync<APIResponse>(model.TicketBooking.VillaNo, HttpContext.Session.GetString(SD.SessionToken));
-    //        if (response != null && response.IsSuccess)
-    //        {
-    //            return RedirectToAction(nameof(IndexTicketBooking));
-    //        }
-
-    //        return View(model);
-    //    }
-
-
-
-   }
 }

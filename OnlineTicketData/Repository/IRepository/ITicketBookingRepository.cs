@@ -10,6 +10,7 @@ namespace OnlineTicketData.Repository.IRepository
     
     public interface ITicketBookingRepository : IRepository<TicketBooking>
     {
+
         Task<TicketBooking> UpdateAsync(TicketBooking entity);
 
 

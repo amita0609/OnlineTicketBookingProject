@@ -20,7 +20,8 @@ namespace OnlineTicketData.Models
         [Required]
         public string CustomerName { get; set; }
 
-        [Required]
+       
+        
         public int EvId { get; set; }
 
 
@@ -28,5 +29,7 @@ namespace OnlineTicketData.Models
         public Event Event { get; set; }
 
 
+
+       
     }
 }

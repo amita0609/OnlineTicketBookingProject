@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using OnlineTicketData.Db;
 using OnlineTicketData.Models;
 using OnlineTicketData.Models.DTO;
+using OnlineTicketData.StaticData;
 using OnlineTicketWeb.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -15,28 +16,30 @@ using System.Reflection;
 
 namespace OnlineTicketWeb.Controllers
 {
+    [Authorize(Roles =SD.Role_Admin)]
     public class EventController : Controller
     {
         private readonly IEventService _eventService;
         private readonly IMapper _mapper;
-        private readonly ApplicationDbContext _dbContext;
-        public EventController(IEventService eventService, IMapper mapper, ApplicationDbContext dbContext)
+        
+        public EventController(IEventService eventService, IMapper mapper)
         {
             _eventService = eventService;
             _mapper = mapper;
-            _dbContext= dbContext;
+            
         }
 
         public async Task<IActionResult> IndexEvent()
         {
             List<Event> list = new();
 
-           // var response = await _eventService.GetAllAsync<APIResponse>();
-            var events = _dbContext.Events.Where(e => e.IsApproved).ToList();
-            if (events != null)
+            var response = await _eventService.GetAllAsync<APIResponse>();
+            //  response.Where(e => e.IsApproved==true).ToList();
+           // var events = _dbContext.Events.Where(e => e.IsApproved).ToList();
+            if (response != null)
             {
               
-                list = JsonConvert.DeserializeObject<List<Event>>(Convert.ToString(events));
+                list = JsonConvert.DeserializeObject<List<Event>>(Convert.ToString(response.Result));
             }
             return View(list);
         }
@@ -47,7 +50,6 @@ namespace OnlineTicketWeb.Controllers
             return View();
         }
 
-        //// //  [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateEvent(EventDTO model)
@@ -58,11 +60,11 @@ namespace OnlineTicketWeb.Controllers
                 var response = await _eventService.CreateAsync<APIResponse>(model);
                 if (response != null && response.IsSuccess)
                 {
-                   // TempData["success"] = "Event created successfully";
+                    TempData["success"] = "Event created successfully";
                     return RedirectToAction(nameof(IndexEvent));
                 }
             }
-        //    TempData["error"] = "Error encountered.";
+              TempData["error"] = "Error encountered.";
             return View(model);
 
         }
@@ -82,7 +84,7 @@ namespace OnlineTicketWeb.Controllers
 
 
 
-        ////  // [Authorize(Roles = "admin")]
+         // [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateEvent(Event model)
@@ -94,11 +96,11 @@ namespace OnlineTicketWeb.Controllers
                
                 if (response != null && response.IsSuccess)
                 {
-                   // TempData["success"] = "Event updated successfully";
+                   TempData["success"] = "Event updated successfully";
                     return RedirectToAction(nameof(IndexEvent));
                 }
             }
-         //   TempData["error"] = "Error encountered.";
+              TempData["error"] = "Error encountered.";
             return View(model);
         }
 
@@ -133,5 +135,13 @@ namespace OnlineTicketWeb.Controllers
             return View(model);
         }
 
+
+
+
+
+
+      
+
+        
     }
 }

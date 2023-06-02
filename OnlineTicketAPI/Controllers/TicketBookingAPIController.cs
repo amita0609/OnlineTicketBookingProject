@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OnlineTicketData.Db;
 using OnlineTicketData.Models;
 using OnlineTicketData.Models.DTO;
+using OnlineTicketData.Repository;
 using OnlineTicketData.Repository.IRepository;
 using System.Data;
 using System.Net;
@@ -12,42 +15,36 @@ namespace OnlineTicketAPI.Controllers
 {
     [Route("api/TicketBookingAPI")]
     [ApiController]
-   // [Authorize]
+    // [Authorize]
     public class TicketBookingAPIController : ControllerBase
     {
         protected APIResponse _response;
         private readonly ITicketBookingRepository _dbTicketBooking;
         private readonly IEventRepository _dbEvent;
         private readonly IMapper _mapper;
+        private readonly ApplicationDbContext _context;
 
-        public TicketBookingAPIController(ITicketBookingRepository dbTicketBooking, IEventRepository dbEvent, IMapper mapper)
+
+        public TicketBookingAPIController(ApplicationDbContext context, ITicketBookingRepository dbTicketBooking, IEventRepository dbEvent, IMapper mapper)
         {
             _dbEvent = dbEvent;
             _dbTicketBooking = dbTicketBooking;
             _mapper = mapper;
             this._response = new();
+            _context = context;
         }
 
         //get
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> GetAllTicketBooking()
+        public async Task<ActionResult> GetAllTicketBooking()
         {
-            try
-            {
-                IEnumerable<TicketBooking> TicketBookings = await _dbTicketBooking.GetAllAsync(includeProperties:"Event");
-                _response.Result = _mapper.Map<IEnumerable<TicketBookingDTO>>(TicketBookings);
-                _response.StatusCode = HttpStatusCode.OK;
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages
-                     = new List<string>() { ex.ToString() };
-            }
-            return _response;
+
+            IEnumerable<TicketBooking> TicketBookings = await _dbTicketBooking.GetAllAsync(includeProperties: "Event");
+
+            return Ok(TicketBookings);
+
         }
 
 
@@ -55,121 +52,101 @@ namespace OnlineTicketAPI.Controllers
         //getById
         [HttpGet("{id:int}", Name = "GetTicket")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> GetTicketBookingById(int id)
+        public async Task<ActionResult> GetTicketBookingById(int id)
         {
-            try
-            {
-                if (id == 0)
-                {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(_response);
-                }
-                var obj = await _dbTicketBooking.GetAsync(u => u.TicketId == id);
-                if (obj == null)
-                {
-                    _response.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(_response);
-                }
-                _response.Result = _mapper.Map<TicketBookingDTO>(obj);
-                _response.StatusCode = HttpStatusCode.OK;
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages
-                     = new List<string>() { ex.ToString() };
-            }
-            return _response;
 
+
+            var obj = _dbTicketBooking.GetAsync(u => u.TicketId == id, includeProperties: "Event");
+            if (obj == null)
+            {
+                _response.StatusCode = HttpStatusCode.NotFound;
+                return NotFound(_response);
+            }
+
+            _response.StatusCode = HttpStatusCode.OK;
+            return Ok(_response);
         }
+
+
+
 
 
         //post
         [HttpPost]
-  
+
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<APIResponse>> CreateTicketBookingAsync([FromBody] TicketBookingDTO obj)
+        public async Task<ActionResult> CreateTicketBooking([FromBody] TicketBookingDTO obj)
         {
-            try
+
+            var EV = _context.Events.FirstOrDefault(u => u.EventId == obj.EvId);
+
+
+
+            if (EV.AvailableSeats <= 0)
+                return BadRequest("No available seats.");
+
+            var booking = new TicketBookingDTO
             {
 
-               
-                TicketBooking ticket = _mapper.Map<TicketBooking>(obj);
-                await _dbTicketBooking.CreateAsync(ticket);
-            
-                _response.StatusCode = HttpStatusCode.Created;
+                EvId = obj.EvId,
+                CustomerName = obj.CustomerName
 
+            };
+            TicketBooking b = _mapper.Map<TicketBooking>(obj);
+            await _dbTicketBooking.CreateAsync(b);
+            EV.AvailableSeats--;
+            _dbEvent.UpdateAsync(EV);
 
-                return CreatedAtRoute("GetTicket", new { id = ticket.TicketId }, _response);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages
-                     = new List<string>() { ex.ToString() };
-            }
-            return _response;
+            _dbEvent.SaveAsync();
+            return Ok(booking);
+
         }
 
-        //delete
-      
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpDelete("{id:int}", Name = "DeleteTicketBooking")]
-        public async Task<ActionResult<APIResponse>> DeleteTicketBooking(int id)
-        {
-            try
-            {
-                if (id == 0)
-                {
-                    return BadRequest();
-                }
-                var user = await _dbTicketBooking.GetAsync(u => u.TicketId == id);
-          
-                await _dbTicketBooking.RemoveAsync(user);
+        ////delete
 
-                _response.StatusCode = HttpStatusCode.NoContent;
-                _response.IsSuccess = true;
-                return Ok(_response);
-            }
-            catch (Exception ex)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpDelete("{id:int}", Name = "DeleteTicketBooking")]
+        public async Task<ActionResult> DeleteTicketBooking(int id)
+        {
+
+
+
+            var booking = await _dbTicketBooking.GetAsync(u => u.TicketId == id);
+          
+
+            await _dbTicketBooking.RemoveAsync(booking);
+
+            var events = _context.Events.FirstOrDefault(u => u.EventId == booking.EvId);
+            if (events != null)
             {
-                _response.IsSuccess = false;
-                _response.ErrorMessages
-                     = new List<string>() { ex.ToString() };
+                events.AvailableSeats++;
+              await  _dbEvent.UpdateAsync(events);
+                _dbEvent.SaveAsync();
+              
+                return NoContent();
             }
-            return _response;
+            return BadRequest();
+
         }
 
         //update
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpPut("{id:int}", Name = "UpdateTicketBooking")]
-        public async Task<ActionResult<APIResponse>> UpdateTicketBooking(int id, [FromBody] TicketBookingDTO obj)
-        {
-            try
-            {
-                TicketBooking ticket = _mapper.Map<TicketBooking>(obj);
-                await _dbTicketBooking.UpdateAsync(ticket);
-                _response.StatusCode = HttpStatusCode.NoContent;
-                _response.IsSuccess = true;
-                return Ok(_response);
-            }
-            catch (Exception ex)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages
-                     = new List<string>() { ex.ToString() };
-            }
-            return _response;
 
+        [HttpPut("{id:int}", Name = "UpdateTicketBooking")]
+        public async Task<ActionResult> UpdateTicketBooking(int id, [FromBody] TicketBookingDTO obj)
+        {
+            TicketBooking ticket = _mapper.Map<TicketBooking>(obj);
+            await _dbTicketBooking.UpdateAsync(ticket);
+            _response.StatusCode = HttpStatusCode.NoContent;
+            _response.IsSuccess = true;
+            return Ok(_response);
         }
 
 
+    
 
-    }
+
+
+   }
 }
+

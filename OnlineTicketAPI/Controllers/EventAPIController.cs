@@ -12,21 +12,24 @@ namespace OnlineTicketAPI.Controllers
 {
     [Route("api/EventAPI")]
     [ApiController]
-    [Authorize]
+  //  [Authorize]
     public class EventAPIController : ControllerBase
     {
         protected APIResponse _response;
         private readonly IEventRepository _dbEvent;
         private readonly IMapper _mapper;
+        private readonly IEventRepository _eventRepository;
 
-       
 
-        public EventAPIController(IEventRepository dbEvent, IMapper mapper)
+
+        public EventAPIController(IEventRepository dbEvent, IMapper mapper, IEventRepository _eventRepository)
         {
             _dbEvent = dbEvent;
             _mapper = mapper;
             this._response = new();
-          
+            _eventRepository = _eventRepository;
+
+
         }
 
         //get
@@ -39,7 +42,7 @@ namespace OnlineTicketAPI.Controllers
             {
 
                 IEnumerable<Event> Events = await _dbEvent.GetAllAsync();
-             
+              //  var events = _eventRepository.Where(e => e.IsApproved).ToList();
                 _response.Result = _mapper.Map<IEnumerable<Event>>(Events);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
@@ -129,9 +132,9 @@ namespace OnlineTicketAPI.Controllers
                 {
                     return BadRequest();
                 }
-                var user = await _dbEvent.GetAsync(u => u.EventId == id);
+                var ev = await _dbEvent.GetAsync(u => u.EventId == id);
           
-                await _dbEvent.RemoveAsync(user);
+                await _dbEvent.RemoveAsync(ev);
 
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;

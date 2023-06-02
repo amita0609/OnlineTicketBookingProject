@@ -29,6 +29,9 @@
                     AvailableSeats
                 </th>
                 <th>
+                    IsApproved
+                </th>
+                <th>
                    
                 </th>
             </tr>
@@ -42,15 +45,17 @@
                     <td>@item.EventDate</td>
                     <td>@item.EventLocation</td>
                     <td>@item.AvailableSeats</td>
-                  
+                    <td>@item.IsApproved</td>
+
                     <td>
                         <a asp-controller="Event" asp-action="UpdateEvent" asp-route-eventId="@item.EventId" class="btn btn-success"><i class="bi bi-pencil-square"></i>Update</a>
                         <a asp-controller="Event" asp-action="DeleteEvent" asp-route-eventId="@item.EventId" class="btn btn-danger"><i class="bi bi-trash-fill"></i>Delete</a>
+                        <a asp-controller="TicketBooking" asp-action="CreateTicketBooking" class="btn btn-outline-alert"> Book Ticket</a>
                     </td>
                 </tr>
             }
 
-            @await Component.InvokeAsync("Countdown")
+         @*   @await Component.InvokeAsync("Countdown")*@
 
         </tbody>
     </table>

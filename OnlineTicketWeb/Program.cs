@@ -27,8 +27,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddMvc().AddSessionStateTempDataProvider();
+builder.Services.AddSession();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+builder.Services.AddHttpClient<IAdminService, AdminService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddHttpClient<IEventService, EventService>();
 builder.Services.AddScoped<IEventService, EventService>();
 
@@ -53,7 +56,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession();
 app.MapRazorPages();
 app.UseAuthentication();
 app.UseAuthorization();
