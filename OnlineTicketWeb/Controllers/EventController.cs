@@ -34,8 +34,7 @@ namespace OnlineTicketWeb.Controllers
             List<Event> list = new();
 
             var response = await _eventService.GetAllAsync<APIResponse>();
-            //  response.Where(e => e.IsApproved==true).ToList();
-           // var events = _dbContext.Events.Where(e => e.IsApproved).ToList();
+         
             if (response != null)
             {
               

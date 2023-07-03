@@ -89,7 +89,7 @@ namespace OnlineTicketAPI.Controllers
             {
 
                 EvId = obj.EvId,
-                CustomerName = obj.CustomerName
+               
 
             };
             TicketBooking b = _mapper.Map<TicketBooking>(obj);
@@ -102,7 +102,7 @@ namespace OnlineTicketAPI.Controllers
 
         }
 
-        ////delete
+        //delete
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpDelete("{id:int}", Name = "DeleteTicketBooking")]

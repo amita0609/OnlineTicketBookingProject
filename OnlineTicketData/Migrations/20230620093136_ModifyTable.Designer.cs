@@ -12,8 +12,8 @@ using OnlineTicketData.Db;
 namespace OnlineTicketData.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230602031829_AddColumn")]
-    partial class AddColumn
+    [Migration("20230620093136_ModifyTable")]
+    partial class ModifyTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -299,7 +299,10 @@ namespace OnlineTicketData.Migrations
             modelBuilder.Entity("OnlineTicketData.Models.TicketBooking", b =>
                 {
                     b.Property<int>("TicketId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketId"));
 
                     b.Property<string>("CustomerName")
                         .IsRequired()

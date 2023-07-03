@@ -296,7 +296,10 @@ namespace OnlineTicketData.Migrations
             modelBuilder.Entity("OnlineTicketData.Models.TicketBooking", b =>
                 {
                     b.Property<int>("TicketId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketId"));
 
                     b.Property<string>("CustomerName")
                         .IsRequired()

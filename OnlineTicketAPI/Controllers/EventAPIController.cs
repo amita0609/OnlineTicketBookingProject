@@ -12,7 +12,7 @@ namespace OnlineTicketAPI.Controllers
 {
     [Route("api/EventAPI")]
     [ApiController]
-  //  [Authorize]
+ //   [Authorize]
     public class EventAPIController : ControllerBase
     {
         protected APIResponse _response;

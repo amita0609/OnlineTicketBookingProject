@@ -1,31 +1,56 @@
-﻿@model IEnumerable<OnlineTicketData.Models.TicketBooking>
-<br />
+﻿@model IEnumerable<TicketBooking>
+@using OnlineTicketData.Models
 
-<h1>Ticket List</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>TicketId</th>
-            <th>CustomerName</th>
-            <th>EventName</th>
-            <th>Booked Tickets</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var ticket in Model)
-        {
+<h2>Event List </h2>
+
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@ticket.TicketId</td>
-                <td>@ticket.CustomerName</td>
-                <td>@ticket.Event.EventName</td>
-                <td>@ticket.NumberOfTicket</td>
-                <a asp-controller="TicketBooking" asp-action="DeleteBooking"
-                   asp-route-ticketId="@ticket.TicketId" class="btn btn-danger">Delete Booking</a>
-               
+                <th>Event Name</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Available Seats</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var result in Model)
+            {
+
+                <tr>
+
+                    <td>@result.Event.EventName</td>
+                    <td>@result.Event.EventDescription</td>
+
+                    <td>@result.Event.EventDate</td>
+                  
+                    <td>@result.Event.AvailableSeats</td>
 
 
+                    <td>
+                        <form asp-action="BookTicket" method="post">
+                            <input type="hidden" name="EvId" value="@result.EvId" />
+                            <button type="submit">Book Ticket</button>
+                        </form>
+
+
+                       @* <form asp-action="DeleteBooking" method="post">
+                            <input type="hidden" name="id" value="@result.EvId" />
+                            <button type="submit">Delete</button>
+                        </form>*@
+                        @* <a asp-action="CreateBooking" asp-route-id="@result.CourseId">Enroll</a>
+                <a asp-action="DeleteBooking" asp-route-id="@result.CourseId">Delete</a>*@
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No Event available.</p>
+}

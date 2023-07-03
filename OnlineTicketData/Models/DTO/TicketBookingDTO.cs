@@ -11,8 +11,8 @@ namespace OnlineTicketData.Models.DTO
 {
     public class TicketBookingDTO
     {
-        [Required]
-        public int TicketId { get; set; }
+        //[Required]
+        //public int TicketId { get; set; }
 
         [Required]
         public int EvId { get; set; }

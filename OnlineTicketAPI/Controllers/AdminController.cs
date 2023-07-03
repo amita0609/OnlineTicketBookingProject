@@ -22,15 +22,15 @@ namespace OnlineTicketAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllEvents()
         {
-            IEnumerable<Event> course =await _eventRepository.GetAllAsync(b => b.IsApproved == true);
-            if (course == null)
+            IEnumerable<Event> c =await _eventRepository.GetAllAsync(b => b.IsApproved == false);
+            if (c == null)
             {
                 return NotFound();
 
             }
             else
             {
-                return Ok(course);
+                return Ok(c);
             }
 
         }

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<TicketBooking>
+@using OnlineTicketData.Models
+
+
+<h2>Ticket List </h2
+    @if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Customer Name</th>
+                <th>No.Of Tickets</th>
+              
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in Model)
+            {
+
+                <tr>
+
+                    <td>@result.Event.EventName</td>
+                    <td>@result.CustomerName</td>
+
+                    <td>@result.NumberOfTicket</td>
+                  
+                  
+
+                    <td>
+                      
+
+                       <form asp-action="DeleteBooking" method="post">
+                            <input type="hidden" name="id" value="@result.EvId" />
+                            <button type="submit">Delete</button>
+                        </form>
+                      
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No Tickets</p>
+}

@@ -21,24 +21,36 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="IndexEvent">Event</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="TicketBooking" asp-action="IndexTicketBooking">TicketBooking</a>
-                        </li>
+                       
 
                         @if (User.IsInRole(SD.Role_Admin))
                         {
+                          
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="IndexEvent"> Event List</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">View Pending Events</a>
                             </li>
                         }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="TicketBooking" asp-action="IndexTicketBooking"> All Events</a>
+                            </li>
+
+                          
+                            <li class="nav-item">
+                             <a class="nav-link text-dark" asp-area="" asp-controller="TicketBooking" asp-action="ViewBookedTickets">View Booked Tickets</a>
+                        </li>
+                        }
                     </ul>
-                  <partial name="_LoginPartial" />
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>

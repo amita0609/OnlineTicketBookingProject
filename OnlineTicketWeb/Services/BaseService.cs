@@ -19,6 +19,7 @@ namespace OnlineTicketWeb.Services
             this.responseModel = new();
             this.httpClient = httpClient;
         }
+
         public async Task<T> SendAsync<T>(APIRequest apiRequest)
         {
             try

@@ -36,12 +36,17 @@ namespace OnlineTicketWeb.Controllers
             List<TicketBooking> list = new();
 
             var response = await _ticketBookingService.GetAllAsync<APIResponse>();
+            // var events=await _eventService.GetAllAsync<APIResponse>();
+            // ViewBag.events = events;
+
+
             if (response != null && response.IsSuccess)
             {
                 list = JsonConvert.DeserializeObject<List<TicketBooking>>(Convert.ToString(response.Result));
             }
             return View(list);
         }
+
 
 
         
@@ -94,6 +99,19 @@ namespace OnlineTicketWeb.Controllers
             }
             TempData["error"] = "Error encountered.";
             return View(model);
+        }
+
+
+        public async Task<IActionResult> ViewBookedTickets()
+        {
+            List<TicketBooking> list = new();
+
+            var response = await _ticketBookingService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                list = JsonConvert.DeserializeObject<List<TicketBooking>>(Convert.ToString(response.Result));
+            }
+            return View(list);
         }
     }
 

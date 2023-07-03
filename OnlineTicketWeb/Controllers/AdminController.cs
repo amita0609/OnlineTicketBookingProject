@@ -18,8 +18,8 @@ namespace OnlineTicketWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var posts = await _adminService.GetUsersAsync();
-            return View(posts);
+            var events = await _adminService.GetEventsAsync();
+            return View(events);
         }
 
         public async Task<IActionResult> Approve(int id)
@@ -46,6 +46,8 @@ namespace OnlineTicketWeb.Controllers
         //    var pendingEvents =await _eventService.GetAsync(e => !e.IsApproved).ToList();
         //    return View(pendingEvents);
         //}
+
+
     }
 }
     
